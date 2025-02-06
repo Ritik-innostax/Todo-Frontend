@@ -1,79 +1,35 @@
-// src/components/TodoPage.js
-import  { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateNewTodo, addTodo, deleteTodo, fetchTodos } from '../feature/todo/Todo';
+import { useEffect } from 'react';
+import { selectNewTodo, selectTodos, selectloading } from '../feature/todo/todo.selectors';
 
 function TodoPage() {
-  const [newTodo, setNewTodo] = useState({
-    title: '',
-    description: '',
-    priority: 'medium',
-    status: 'pending',
-    dueDate: '',
-  });
+  const dispatch = useDispatch();
+  const newTodo = useSelector(selectNewTodo);
+  const todos = useSelector(selectTodos);
+  const loading = useSelector(selectloading);
 
+  useEffect(() => {
+    dispatch(fetchTodos());
+  }, [dispatch]);
 
-  const todos = [
-    {
-      _id: '67a0b76a75c2de61c3434e41',
-      title: 'Sample Task 21',
-      description: 'This is a description of the task of task3.',
-      status: 'pending',
-      priority: 'high',
-      createdAt: '2025-02-03T12:32:42.754Z',
-      dueDate: '2025-02-03T12:32:42.754Z',
-      __v: 0
-    },
-    {
-      _id: '67a1c0f133e9e849a9dd643d',
-      title: 'Sample Task 22',
-      description: 'This is a description of the task of task2.',
-      status: 'completed',
-      priority: 'low',
-      createdAt: '2025-02-04T07:25:37.374Z',
-      dueDate: '2025-02-04T07:25:37.374Z',
-      __v: 0
-    },
-    {
-      _id: '67a2157e94fba1585c2129d8',
-      title: 'Sample Task 20',
-      description: 'This is a description of the task of task3.',
-      status: 'pending',
-      priority: 'medium',
-      createdAt: '2025-02-04T13:26:22.926Z',
-      dueDate: '2025-02-04T13:26:22.926Z',
-      __v: 0
-    }
-  ];
-
-  
   const handleChange = (e) => {
-    setNewTodo({
-      ...newTodo,
-      [e.target.name]: e.target.value,
-    });
+    dispatch(updateNewTodo({ name: e.target.name, value: e.target.value }));
   };
 
-  
   const handleAddTodo = () => {
-    if (newTodo.title.trim() && newTodo.description.trim()) {
-      
-      console.log('New Todo:', newTodo);
-      setNewTodo({
-        title: '',
-        description: '',
-        priority: 'medium',
-        status: 'pending',
-        dueDate: '',
-      });
-    } else {
-      console.log('Please fill out all fields');
-    }
+    dispatch(addTodo(newTodo));
   };
+
+  const handleDeleteTodo = (id) => {
+    dispatch(deleteTodo(id));
+  };
+
+  if (loading) return <p>Loading...</p>;
 
   return (
     <div className="max-w-4xl mx-auto bg-white shadow-xl rounded-lg p-8 my-10">
       <h1 className="text-4xl font-semibold text-center text-blue-600 mb-6">Todo List</h1>
-
-      
       <div className="space-y-4 mb-6">
         <input
           type="text"
@@ -126,15 +82,15 @@ function TodoPage() {
           </button>
         </div>
       </div>
-
-      
       <ul className="space-y-4">
         {todos.map((todo) => (
+          
           <li
             key={todo._id}
             className="flex items-center justify-between bg-gray-50 px-6 py-4 rounded-lg shadow-sm hover:bg-gray-100 transition duration-300"
           >
             <div className="flex-1">
+              <input name="status" type="checkbox" onClick={handleChange} checked={todo.status === "Completed"} />
               <h3 className="text-xl font-medium text-gray-700">{todo.title}</h3>
               <p className="text-gray-600">{todo.description}</p>
               <p className={`text-sm font-semibold ${todo.priority === 'high' ? 'text-red-600' : todo.priority === 'medium' ? 'text-yellow-500' : 'text-green-500'}`}>
@@ -147,7 +103,7 @@ function TodoPage() {
                 {todo.status.charAt(0).toUpperCase() + todo.status.slice(1)}
               </span>
               <button
-                onClick={() => console.log(`Delete todo with id: ${todo._id}`)} 
+                onClick={() => handleDeleteTodo(todo._id)}
                 className="text-red-500 hover:text-red-600 focus:outline-none transition duration-300"
               >
                 Delete
