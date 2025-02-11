@@ -33,7 +33,7 @@ export const deleteTodo = createAsyncThunk("todos/deleteTodo", async (id) => {
 export const updateTodo = createAsyncThunk(
   "todos/updateTodo",
   async ({ id, todo }) => {
-    console.log(id);
+    console.log(id, "updated");
     console.log(todo, "todo.todo");
     const response = await axios.put(`${apiUrl}/updatetodo/${id}`, todo);
     console.log(response.data);
