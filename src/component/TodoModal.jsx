@@ -2,8 +2,10 @@ import React, { useEffect, useRef } from 'react';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import { RxCross1 } from 'react-icons/rx';
 import { ToastContainer, toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 const TodoModal = ({ show, setShow, initialValues, validationSchema, handleSubmit, isEdit}) => {
     const modalRef = useRef(null);
+    const navigate =useNavigate();
   
 
     const handleClose = (e) => {
@@ -96,7 +98,7 @@ const TodoModal = ({ show, setShow, initialValues, validationSchema, handleSubmi
 
               <div className="flex justify-end">
                 <button
-                onClick={()=> isEdit==true ?`${toast('Congratulations you have Updated Your todo ')}`:`${toast('Congratulations you have added Your todo')}`}
+                onClick={()=> isEdit==true ?`${toast('Congratulations you have Updated Your todo ')}`:`${toast('Congratulations you have added Your todo')}` }
                   type="submit"
                   className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none mt-4"
                 >

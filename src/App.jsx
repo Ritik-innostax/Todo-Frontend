@@ -4,6 +4,7 @@ import TodoPage from './component/TodoPage';
 import HomePage from './component/HomePage';
 import AboutPage from './component/AboutPage';
 import Navbar from './component/Navbar';
+import Loader from './component/Loader';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <div className="min-h-screen bg-gray-100">
 
        <Navbar/>
+       {/* <Loader/> */}
 
         
         <main className="py-8 px-4">
