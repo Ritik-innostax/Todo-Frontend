@@ -1,7 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { useState } from "react";
+import Loader from "../../component/Loader";
 const { VITE_BASE_URL } = import.meta.env;
 console.log(VITE_BASE_URL);
+// const page = 1;
 
 const apiUrl = `${VITE_BASE_URL}/api/todo`;
 console.log(apiUrl);
@@ -15,7 +18,19 @@ export const fetchSingleTodos = createAsyncThunk(
   "todos/fetchSingleTodos",
   async (id) => {
     const response = await axios.get(`${apiUrl}/singleTodo/${id}`);
+
     console.log("response", response);
+    return response.data;
+  }
+);
+export const fetchgetlimit = createAsyncThunk(
+  "limits/fetchgetlimit",
+  async ({ page }) => {
+    // setisloading(true);
+    const response = await axios.get(`${apiUrl}/getlimitdata/?page=${page}`);
+
+    console.log("response", response);
+    // setisloading(false);
     return response.data;
   }
 );
@@ -47,6 +62,7 @@ const todoSlice = createSlice({
   initialState: {
     todos: [],
     singleTodo: null,
+    getlimittodo: null,
     newTodo: {
       title: "",
       description: "",
@@ -67,21 +83,23 @@ const todoSlice = createSlice({
     },
 
     checkTodo: (state, action) => {
-      const todo = state.todos.find((todo) => todo._id === action.payload);
+      const todo = state.getlimittodo.todos.find(
+        (todo) => todo._id === action.payload
+      );
       if (!todo) {
         console.error("To-Do not found!");
         return;
       }
       const iscompleted = todo.status === "pending" ? "completed" : "pending";
       console.log(iscompleted + " completed successfully " + todo.status);
-      state.todos = state.todos.map((todoItem) =>
+      state.getlimittodo.todos = state.getlimittodo.todos.map((todoItem) =>
         todoItem._id === action.payload
           ? { ...todoItem, status: iscompleted }
           : todoItem
       );
       console.log(state.todos, "sending");
 
-      state.todos.map((todoItem) => {
+      state.getlimittodo.todos.map((todoItem) => {
         if (todoItem.status === "completed") {
           console.log("All todos completed true");
           return true;
@@ -147,6 +165,22 @@ const todoSlice = createSlice({
         console.log(state.singleTodo, "done");
       })
       .addCase(fetchSingleTodos.rejected, (state, action) => {
+        console.log(" inside fetchTodos.rejected");
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(fetchgetlimit.pending, (state) => {
+        console.log(" inside fetchTodos.pending");
+        state.loading = true;
+      })
+      .addCase(fetchgetlimit.fulfilled, (state, action) => {
+        console.log(" inside fetchTodosingle.fulfilled");
+        state.loading = false;
+        console.log(action.payload, "done");
+        state.getlimittodo = action.payload;
+        console.log(state.getlimittodo, "done");
+      })
+      .addCase(fetchgetlimit.rejected, (state, action) => {
         console.log(" inside fetchTodos.rejected");
         state.loading = false;
         state.error = action.error.message;
